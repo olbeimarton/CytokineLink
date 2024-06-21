@@ -22,18 +22,21 @@ In this study, we used single-cell transcriptomics data from colonic biopsies of
 
 ### Cytokine interactions from the Immune Dictionary (2024)
 
-This network contains the cytokine-cytokine interactions collated from the supplementary materials of [Cui et al., 2023](https://www.nature.com/articles/s41586-023-06816-9)
+This network contains the cytokine-cytokine interactions collated from the supplementary materials of [Cui et al., 2023](https://www.nature.com/articles/s41586-023-06816-9).
+
 The network can be accessed via the [NDEx network repository](https://www.ndexbio.org/viewer/networks/6010d889-2fd9-11ef-9621-005056ae23aa)
 
 ### Cytokine interactions from CytoSig (2023)
 
 In this project, we created a network of cytokine interactions by processing transcriptomics data from over 2000 datasets deposited to the CytoSig database. By applying CytoSig’s significance analysis protocol, we identified statistically significant cytokine - cytokine interactions.
 The resulting network is a signed, directed map of cytokine communication, comprising 544 interactions among 155 cytokines. These interactions are annotated with the potential intracellular pathways connecting the cytokines and their respective stimulatory or inhibitory effects, based on the sum of deposited expression data. 
+
 The network can be accessed via the [NDEx network repository](https://www.ndexbio.org/viewer/networks/5503d3ad-1763-11ef-9621-005056ae23aa)
 
 ### CytokineLink (2021)
 
 In our earlier work, we collated the most prevalent cytokines from the literature and assigned the proteins and their corresponding receptors to source tissue and blood cell types based on enriched consensus RNA-Seq data from the Human Protein Atlas database. To assign more confidence to the interactions, we integrated the literature information on cell–cytokine interactions from two systems of immunology databases, immuneXpresso and ImmunoGlobe. 
+
 The network can be accessed via the [NDEx network repository](https://www.ndexbio.org/viewer/networks/85d4d317-e323-11eb-b666-0ac135e8bacf)
 
 

@@ -1,4 +1,4 @@
-# CytokineLink
+![logo](website_logo.png)
 
 CytokineLink collates cytokine interaction networks, describing how cytokines may affect one another.
 
@@ -10,15 +10,28 @@ Cytokines are small peptides that facilitate communication between various cell 
 
 Cytokines can activate or inhibit the production and activity of other cytokines in target cells.  These cytokine interactions help advance the immune response to infections and illnesses. 
 
+![Chain of interactions](workflow_cyt.png)
+
 ### Why cytokine interactions?
 
 By studying the broader network of cytokine interactions instead of the effects of individual cytokines we aim to map how the immune system shapes itself in disease. Modulating cytokine communication to manage an overactive immune response is often a key objective in drug development, and by understanding how cytokines influence each other we may offer alternative intervention points, and better understand why certain therapies do and don’t work. 
+
+
 
 ## Cytokine interaction resources
 
 ### Cytokine network dysregulation in Ulcerative Colitis (2024)
 
 In this study, we used single-cell transcriptomics data from colonic biopsies of immunotherapy treatment-naive and immunotherapy-treated ulcerative colitis (UC) patients to build cytokine networks characterising active cytokine pathways in UC. The networks effectively captured known physiologically relevant cytokine-cytokine interactions which could be recapitulated in vitro in UC patient-derived colonic epithelial organoids and highlighted novel facets of UC pathogenesis, including a cytokine subnetwork that is unique to treatment-naive UC patients.
+
+Our preprint: [Decoding Cytokine Networks in Ulcerative Colitis to Identify Pathogenic Mechanisms and Therapeutic Targets](https://www.biorxiv.org/content/10.1101/2024.09.12.612623v1)
+
+The networks can interactively accessed on the NDEx platform:
+- [Healthy](https://www.ndexbio.org/viewer/networks/bbb88388-7054-11ef-ac94-005056ae3c32)
+- [UC inflamed treatment naive](https://www.ndexbio.org/viewer/networks/f2efcc5a-7054-11ef-ac94-005056ae3c32)
+- [UC inflamed treatment exposed](https://www.ndexbio.org/viewer/networks/0a6448cd-7055-11ef-ac94-005056ae3c32)
+- [UC noninflamed treatment exposed](https://www.ndexbio.org/viewer/networks/326d75df-7055-11ef-ac94-005056ae3c32)
+
 
 ### Cytokine interactions from the Immune Dictionary (2024)
 
@@ -36,6 +49,8 @@ The network can be accessed via the [NDEx network repository](https://www.ndexbi
 ### CytokineLink (2021)
 
 In our earlier work, we collated the most prevalent cytokines from the literature and assigned the proteins and their corresponding receptors to source tissue and blood cell types based on enriched consensus RNA-Seq data from the Human Protein Atlas database. To assign more confidence to the interactions, we integrated the literature information on cell–cytokine interactions from two systems of immunology databases, immuneXpresso and ImmunoGlobe. 
+
+Article: [CytokineLink: A Cytokine Communication Map to Analyse Immune Responses—Case Studies in Inflammatory Bowel Disease and COVID-19](https://www.mdpi.com/2073-4409/10/9/2242)
 
 The network can be accessed via the [NDEx network repository](https://www.ndexbio.org/viewer/networks/85d4d317-e323-11eb-b666-0ac135e8bacf)
 

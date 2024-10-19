@@ -26,7 +26,7 @@ In this study, we used single-cell transcriptomics data from colonic biopsies of
 
 Our preprint: [Decoding Cytokine Networks in Ulcerative Colitis to Identify Pathogenic Mechanisms and Therapeutic Targets](https://www.biorxiv.org/content/10.1101/2024.09.12.612623v1)
 
-The networks can interactively accessed on the NDEx platform:
+The networks can be interactively accessed on the NDEx platform:
 - [Healthy](https://www.ndexbio.org/viewer/networks/bbb88388-7054-11ef-ac94-005056ae3c32)
 - [UC inflamed treatment naive](https://www.ndexbio.org/viewer/networks/f2efcc5a-7054-11ef-ac94-005056ae3c32)
 - [UC inflamed treatment exposed](https://www.ndexbio.org/viewer/networks/0a6448cd-7055-11ef-ac94-005056ae3c32)

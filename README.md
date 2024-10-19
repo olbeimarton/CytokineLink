@@ -1,4 +1,4 @@
-![logo](website_logo.png)
+![](website_logo.png)
 
 CytokineLink collates cytokine interaction networks, describing how cytokines may affect one another.
 

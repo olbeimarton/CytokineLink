@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CytokineLink | Cytokine interaction networks</title>
+<meta name="description" content="CytokineLink maps how cytokines activate each other, and how these networks are rewired in inflammatory disease.">
+<meta property="og:title" content="CytokineLink">
+<meta property="og:description" content="Cytokine interaction networks in health, disease and therapy.">
+<style>
+:root{
+  --bg:#FAF9F6; --surface:#FFFFFF; --ink:#1F1B3A; --muted:#5E5878; --line:#DCD8EA;
+  --act:#D55E00; --inh:#0072B2; --idle:#B9B4CF;
+  --display:"Helvetica Neue", Helvetica, Arial, sans-serif;
+  --body:"Helvetica Neue", Helvetica, Arial, sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--body);
+  font-size:1.06rem; line-height:1.55; -webkit-font-smoothing:antialiased}
+a{color:var(--act); text-underline-offset:.18em}
+a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--inh); outline-offset:3px; border-radius:4px}
+h1,h2,h3{font-family:var(--display); font-weight:700; line-height:1.1; margin:0}
+.wrap{max-width:68rem; margin:0 auto; padding:0 1.25rem}
+.prose{max-width:38rem}
+p{margin:0 0 1em}
+svg{display:block; width:100%; height:auto}
+svg text{font-family:var(--display); font-weight:500}
+.legend{display:flex; flex-wrap:wrap; gap:.6rem 1.4rem; font-family:var(--display); font-size:.9rem; color:var(--muted); margin-top:.5rem; align-items:center}
+.legend span{display:inline-flex; align-items:center; gap:.45rem}
+.dot{width:.9rem; height:.9rem; border-radius:50%; border:1px solid #888}
+.grad{width:5rem; height:.6rem; border-radius:3px; background:linear-gradient(90deg,#5A1E9E,#C2557A,#F2C14E)}
+
+/* hero */
+.hero{padding-top:3.5rem; padding-bottom:2rem; display:grid; gap:1.5rem; align-items:center}
+@media (min-width:860px){.hero{grid-template-columns:1fr 1.15fr; padding-top:5rem; padding-bottom:3rem}}
+.hero h1{font-size:clamp(2.8rem,8vw,5.2rem); letter-spacing:-.03em}
+.hero .lede{font-size:1.3rem; line-height:1.45; color:var(--muted); margin-top:1rem; max-width:26rem}
+.hero .key{display:flex; gap:1.25rem; flex-wrap:wrap; margin-top:1.5rem; font-family:var(--display); font-size:.95rem; color:var(--muted)}
+.key span{display:inline-flex; align-items:center; gap:.5rem}
+.key i{display:inline-block; width:1.6rem; height:3px; border-radius:2px}
+
+section{padding:3.5rem 0; border-top:1px solid var(--line)}
+section h2{font-size:clamp(1.8rem,4.5vw,2.6rem); letter-spacing:-.02em; margin-bottom:1rem}
+.figure{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:1rem; margin:1.75rem 0 .75rem}
+.caption{font-size:.95rem; color:var(--muted)}
+
+/* simulator */
+.controls{display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; margin-bottom:.75rem}
+.seg{display:inline-flex; border:1px solid var(--line); border-radius:999px; padding:3px; background:var(--bg)}
+.seg button,.btn{font-family:var(--display); font-size:.95rem; font-weight:500; border:0; cursor:pointer;
+  padding:.5rem 1rem; border-radius:999px; background:transparent; color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink); color:var(--bg)}
+.btn{border:1.5px solid var(--act); color:var(--act)}
+.btn[aria-pressed="true"]{background:var(--act); color:var(--surface)}
+.btn.ghost{border-color:var(--line); color:var(--muted)}
+.verdict{min-height:3.3em; margin-top:.9rem}
+.node{cursor:pointer}
+.node .ring{fill:var(--surface); stroke:var(--line); stroke-width:2; transition:stroke .3s}
+.node .glow{transition:fill-opacity .6s ease}
+.node.blocked .ring{stroke:var(--ink); stroke-dasharray:5 4}
+.node .slash{stroke:var(--ink); stroke-width:3; stroke-linecap:round; opacity:0; transition:opacity .2s}
+.node.blocked .slash{opacity:1}
+.node:hover .ring{stroke:var(--muted)}
+.edge{fill:none; stroke-width:2.5; transition:opacity .6s ease, stroke-opacity .6s ease}
+.edge.flow{stroke-dasharray:7 7; animation:dash var(--spd,2s) linear infinite}
+@keyframes dash{to{stroke-dashoffset:-28}}
+
+/* timeline */
+.timeline{list-style:none; margin:1.5rem 0 0; padding:0; position:relative}
+.timeline::before{content:""; position:absolute; left:.45rem; top:.5rem; bottom:.5rem; width:2px; background:var(--line)}
+.timeline li{position:relative; padding:0 0 2.5rem 2.25rem; max-width:44rem}
+.timeline li::before{content:""; position:absolute; left:0; top:.45rem; width:1rem; height:1rem; border-radius:50%; background:var(--bg); border:3px solid var(--act)}
+.timeline .when{font-family:var(--display); font-size:.95rem; color:var(--muted)}
+.timeline h3{font-size:1.3rem; margin:.15rem 0 .5rem}
+.links{display:flex; flex-wrap:wrap; gap:.4rem .9rem; font-family:var(--display); font-size:.95rem}
+.links b{font-weight:500; color:var(--muted)}
+footer{padding:2.5rem 0 3rem; border-top:1px solid var(--line); color:var(--muted); font-size:.95rem}
+@media (prefers-reduced-motion:reduce){.edge.flow{animation:none} *{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="wrap hero">
+  <div>
+    <h1>CytokineLink</h1>
+    <p class="lede">Cytokines switch each other on and off. We map those connections as networks to see how the immune system rewires itself in disease, and why some therapies fail.</p>
+    <div class="key">
+      <span><i style="background:var(--act)"></i>activates</span>
+      <span><i style="background:var(--inh)"></i>inhibits</span>
+    </div>
+  </div>
+  <svg id="heroNet" viewBox="0 0 600 420" role="img" aria-label="An animated network of cytokines sending activating and inhibiting signals to one another"></svg>
+</header>
+
+<main>
+<section>
+  <div class="wrap">
+    <div class="prose">
+      <h2>One cytokine leads to another</h2>
+      <p>Cytokines are small proteins that cells use to talk to each other. When a cell receives a cytokine, it often responds by producing a different one, passing the message on to the next cell.</p>
+      <p>Each of these hand-offs is a cytokine interaction. Below, IFNG from a Th1 cell binds its receptor, IFNGR, on an epithelial cell. Inside the cell, JAK1 and JAK2 activate the transcription factor STAT1, which moves into the nucleus and switches on the CXCL10 gene. The CXCL10 released then attracts more T cells through their CXCR3 receptor.</p>
+    </div>
+    <div class="figure">
+      <svg id="relay" viewBox="0 0 760 350" role="img" aria-label="Animation: IFNG from a Th1 cell binds IFNGR on an epithelial cell, signals through JAK1 and JAK2 to activate STAT1, which induces CXCL10. CXCL10 reaches a T cell through CXCR3. The chain is summarised as the interaction IFNG to CXCL10."></svg>
+    </div>
+    <p class="caption prose">CytokineLink chains ligand–receptor, signalling and regulatory interactions into a single edge, IFNG → CXCL10, and assembles these edges across cell types into networks.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="prose">
+      <h2>Following a drug through the network</h2>
+      <p> In ulcerative colitis, TL1A sits at the top of a cascade: it reaches TNF, IL-1B, IL-23A, CCL20 and IFNG, some directly and some through CSF2, IL-10 and IL-17A.</p>
+      <p>Watch the signals flow, then block TL1A to see which cytokines it affects. Based on phase 2 trial data from <a href="https://academic.oup.com/ibdjournal/article/28/3/434/6357022?login=false">Hassan-Zahraee et al., <i>Inflammatory Bowel Diseases</i>, 2022</a>. Switch to the healthy network to see which routes exist only in UC.</p>
+    </div>
+    <div class="figure">
+      <div class="controls">
+        <div class="seg" role="group" aria-label="Network">
+          <button type="button" data-mode="uc" aria-pressed="true">Ulcerative colitis</button>
+          <button type="button" data-mode="healthy" aria-pressed="false">Healthy</button>
+        </div>
+        <button type="button" class="btn" id="antiTL1A" aria-pressed="false">Give anti-TL1A</button>
+      </div>
+      <svg id="sim" viewBox="0 0 600 470" role="img" aria-label="TL1A cytokine network: signals flow from TL1A through CSF2, IL-10 and IL-17A to TNF, IL-1B, IL-23A, CCL20 and IFNG"></svg>
+      <div class="legend">
+        <span><i class="dot" style="background:#A9C8DE"></i>Anti-TL1A target</span>
+        <span><i class="dot" style="background:#F5D547"></i>Affected cytokine</span>
+        <span><svg width="34" height="8" style="width:34px"><line x1="0" y1="4" x2="34" y2="4" stroke="#5A1E9E" stroke-width="3" stroke-dasharray="6 4"/></svg>UC only</span>
+      </div>
+      <p class="verdict" id="verdict" aria-live="polite"></p>
+    </div>
+    <p class="caption prose">Adapted from <a href="https://www.science.org/doi/10.1126/scisignal.adt0986">Olbei et al., <i>Science Signaling</i>, 2026</a>.</p>
+  </div>
+</section>
+
+<section id="resources">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Networks and papers</h2>
+      <p>Every network is openly available to explore on <a href="https://www.ndexbio.org">NDEx</a>.</p>
+    </div>
+    <ol class="timeline">
+      <li>
+        <div class="when">2026 · preprint</div>
+        <h3>Anti-TNF non-response in Crohn’s disease</h3>
+        <p>Networks built from single-cell data of Crohn’s disease patients before and after anti-TNF therapy. Non-responders carry an epithelial IL17C-driven inflammatory module before treatment and lose IL10 feedback loops afterwards, sustaining TNF-independent inflammation.</p>
+        <div class="links">
+          <a href="https://www.biorxiv.org/content/10.64898/2026.08.11.744137v1">bioRxiv preprint</a>
+          <a href="https://github.com/korcsmarosgroup/CD-antiTNF-cytokine-networks">Code</a>
+          <a href="https://zenodo.org/records/21805981">Data</a>
+        </div>
+      </li>
+      <li>
+        <div class="when">2026 · Science Signaling</div>
+        <h3>Cytokine networks in ulcerative colitis</h3>
+        <p>Networks from colonic biopsies of treatment-naive and treatment-exposed ulcerative colitis patients. They recover known interactions, confirmed in patient-derived organoids on an RNA and protein level, and reveal a subnetwork unique to treatment-naive patients.</p>
+        <div class="links">
+          <a href="https://www.science.org/doi/10.1126/scisignal.adt0986">Paper</a>
+          <b>Networks:</b>
+          <a href="https://www.ndexbio.org/viewer/networks/bbb88388-7054-11ef-ac94-005056ae3c32">Healthy</a>
+          <a href="https://www.ndexbio.org/viewer/networks/f2efcc5a-7054-11ef-ac94-005056ae3c32">Inflamed, treatment-naive</a>
+          <a href="https://www.ndexbio.org/viewer/networks/0a6448cd-7055-11ef-ac94-005056ae3c32">Inflamed, treatment-exposed</a>
+          <a href="https://www.ndexbio.org/viewer/networks/326d75df-7055-11ef-ac94-005056ae3c32">Non-inflamed, treatment-exposed</a>
+        </div>
+      </li>
+      <li>
+        <div class="when">2024</div>
+        <h3>Interactions from the Immune Dictionary</h3>
+        <p>Cytokine–cytokine interactions collated from the supplementary data of <a href="https://www.nature.com/articles/s41586-023-06816-9">Cui et al., 2023</a>.</p>
+        <div class="links"><a href="https://www.ndexbio.org/viewer/networks/6010d889-2fd9-11ef-9621-005056ae23aa">Network</a></div>
+      </li>
+      <li>
+        <div class="when">2023</div>
+        <h3>Interactions from CytoSig</h3>
+        <p>A signed, directed network of 544 interactions among 155 cytokines, derived from over 2,000 transcriptomics datasets and annotated with connecting intracellular pathways.</p>
+        <div class="links"><a href="https://www.ndexbio.org/viewer/networks/5503d3ad-1763-11ef-9621-005056ae23aa">Network</a></div>
+      </li>
+      <li>
+        <div class="when">2021 · Cells</div>
+        <h3>CytokineLink: the original communication map</h3>
+        <p>Prevalent cytokines and their receptors assigned to tissues and blood cell types, with case studies in inflammatory bowel disease and COVID-19.</p>
+        <div class="links">
+          <a href="https://www.mdpi.com/2073-4409/10/9/2242">Paper</a>
+          <a href="https://www.ndexbio.org/viewer/networks/85d4d317-e323-11eb-b666-0ac135e8bacf">Network</a>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">Korcsmaros group, Department of Metabolism, Digestion and Reproduction, Imperial College London.</div>
+</footer>
+
+<script>
+(function(){
+const NS="http://www.w3.org/2000/svg";
+const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function visible(node,cb){if(!("IntersectionObserver" in window)){cb(true);return}new IntersectionObserver(es=>es.forEach(e=>cb(e.isIntersecting)),{threshold:.1}).observe(node)}
+
+/* ---------- Hero: ambient network with travelling signals ---------- */
+(function hero(){
+  const svg=document.getElementById("heroNet");
+  const nodes={TNF:[300,190],IL6:[470,120],IL1B:[160,90],IFNG:[120,250],IL10:[300,340],
+    IL17A:[480,290],CXCL8:[560,200],TGFB1:[440,370],IL12A:[60,150],CCL2:[320,50],IL23A:[170,370]};
+  const edges=[["IL1B","TNF",1],["TNF","IL6",1],["TNF","CXCL8",1],["IL12A","IFNG",1],["IFNG","TNF",1],
+    ["IL10","TNF",-1],["IL10","IFNG",-1],["IL23A","IL17A",1],["IL17A","CXCL8",1],["IL17A","IL6",1],
+    ["TGFB1","IL17A",1],["TGFB1","IL6",-1],["TNF","IL10",1],["IL1B","CCL2",1],["CCL2","IL6",1],["IL6","CXCL8",1],["IL12A","IL1B",1]];
+  const gE=el("g",{},svg), gP=el("g",{},svg), gN=el("g",{},svg);
+  const halo={};
+  edges.forEach(([s,t,w])=>{const[a,b]=[nodes[s],nodes[t]];
+    el("line",{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:w>0?"var(--act)":"var(--inh)","stroke-opacity":.28,"stroke-width":2},gE)});
+  for(const n in nodes){const[x,y]=nodes[n];
+    halo[n]=el("circle",{cx:x,cy:y,r:30,fill:"var(--act)","fill-opacity":0},gN);
+    el("circle",{cx:x,cy:y,r:30,fill:"var(--surface)",stroke:"var(--line)","stroke-width":2,"fill-opacity":.88},gN);
+    const t=el("text",{x:x,y:y+5,"text-anchor":"middle","font-size":16,fill:"var(--ink)"},gN);t.textContent=n;}
+  if(reduce)return;
+  const pulses=[]; const flash={}; let on=true,last=0,spawn=0;
+  visible(svg,v=>on=v);
+  function frame(t){
+    const dt=Math.min(50,t-last); last=t;
+    if(on){
+      spawn-=dt;
+      if(spawn<=0){const e=edges[Math.floor(Math.random()*edges.length)];
+        pulses.push({e,p:0,dot:el("circle",{r:5,fill:e[2]>0?"var(--act)":"var(--inh)"},gP)});spawn=260+Math.random()*300;}
+      for(let i=pulses.length-1;i>=0;i--){const P=pulses[i];P.p+=dt/1400;
+        const[a,b]=[nodes[P.e[0]],nodes[P.e[1]]];
+        P.dot.setAttribute("cx",a[0]+(b[0]-a[0])*P.p);P.dot.setAttribute("cy",a[1]+(b[1]-a[1])*P.p);
+        if(P.p>=1){flash[P.e[1]]={v:1,c:P.e[2]>0?"var(--act)":"var(--inh)"};P.dot.remove();pulses.splice(i,1);}}
+      for(const n in flash){const f=flash[n];f.v=Math.max(0,f.v-dt/700);
+        halo[n].setAttribute("fill",f.c);halo[n].setAttribute("fill-opacity",f.v*.5);halo[n].setAttribute("r",30+f.v*10);}
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ---------- Relay: IFNG -> IFNGR -> JAK1/JAK2 -> STAT1 -> CXCL10 ---------- */
+(function relay(){
+  const svg=document.getElementById("relay");
+  const SIG="#5A1E9E", A="var(--act)";
+  const defs=el("defs",{},svg);
+  const mk=el("marker",{id:"arcHead",viewBox:"0 0 10 10",refX:6,refY:5,markerWidth:5,markerHeight:5,orient:"auto"},defs);
+  el("path",{d:"M0 0 L10 5 L0 10 Z",fill:A},mk);
+  const txt=(x,y,str,o={})=>{const t=el("text",Object.assign({x,y,"text-anchor":"middle","font-size":17,fill:"var(--ink)"},o),svg);t.textContent=str;return t};
+  /* cells */
+  const glowM=el("circle",{cx:75,cy:185,r:60,fill:A,"fill-opacity":0},svg);
+  el("circle",{cx:75,cy:185,r:52,fill:"var(--bg)",stroke:"var(--muted)","stroke-width":2},svg);
+  el("circle",{cx:66,cy:190,r:18,fill:"var(--line)"},svg);
+  txt(75,265,"Th1 cell",{fill:"var(--muted)"});
+  el("rect",{x:220,y:95,width:320,height:185,rx:30,fill:"var(--bg)",stroke:"var(--muted)","stroke-width":2},svg);
+  txt(380,302,"Epithelial cell",{fill:"var(--muted)"});
+  const nucGlow=el("ellipse",{cx:478,cy:222,rx:50,ry:40,fill:A,"fill-opacity":0},svg);
+  el("ellipse",{cx:478,cy:222,rx:44,ry:34,fill:"var(--line)"},svg);
+  const gene=txt(478,240,"CXCL10",{"font-size":14,fill:"var(--muted)"});
+  const glowN=el("circle",{cx:685,cy:185,r:60,fill:A,"fill-opacity":0},svg);
+  el("circle",{cx:685,cy:185,r:52,fill:"var(--bg)",stroke:"var(--muted)","stroke-width":2},svg);
+  el("circle",{cx:695,cy:190,r:18,fill:"var(--line)"},svg);
+  txt(685,265,"T cell",{fill:"var(--muted)"});
+  /* receptors */
+  const r1=el("rect",{x:212,y:168,width:16,height:34,rx:4,fill:"var(--surface)",stroke:SIG,"stroke-width":2},svg);
+  txt(220,160,"IFNGR",{"font-size":14,fill:SIG});
+  const r2=el("rect",{x:625,y:168,width:16,height:34,rx:4,fill:"var(--surface)",stroke:SIG,"stroke-width":2},svg);
+  txt(633,160,"CXCR3",{"font-size":14,fill:SIG});
+  /* signalling cascade */
+  const sig=[[228,185],[295,185],[375,140],[455,170]];
+  const names=["","JAK1","JAK2"];
+  const segs=[];
+  for(let i=0;i<sig.length-1;i++)segs.push(el("line",{x1:sig[i][0],y1:sig[i][1],x2:sig[i+1][0],y2:sig[i+1][1],stroke:"var(--ink)","stroke-width":3,"stroke-opacity":.25},svg));
+  const sn=[];
+  for(let i=1;i<sig.length-1;i++){sn[i]=el("circle",{cx:sig[i][0],cy:sig[i][1],r:13,fill:"var(--muted)"},svg);
+    txt(sig[i][0],sig[i][1]+(i===2?-22:34),names[i],{"font-size":14});}
+  const tf=el("path",{d:"M-15 -11 L15 -11 L0 15 Z",fill:"var(--muted)"},svg);
+  const tfl=txt(0,0,"STAT1",{"font-size":14,"font-weight":700});
+  /* braces */
+  const brace=(x1,x2,label)=>{el("path",{d:`M${x1} 312 q0 8 8 8 H${(x1+x2)/2-6} q6 0 6 8 q0 -8 6 -8 H${x2-8} q8 0 8 -8`,fill:"none",stroke:"var(--muted)","stroke-width":1.5},svg);
+    txt((x1+x2)/2,346,label,{"font-size":14,"font-style":"italic",fill:"var(--muted)"})};
+  brace(130,240,"Ligand–receptor"); brace(255,415,"Signalling"); brace(430,530,"Regulatory");
+  /* summary arc */
+  const summary=el("g",{opacity:0},svg);
+  el("path",{d:"M95 120 Q 380 -30 665 120",fill:"none",stroke:A,"stroke-width":7,"stroke-linecap":"round","marker-end":"url(#arcHead)","stroke-opacity":.75},summary);
+  const st=el("text",{x:380,y:30,"text-anchor":"middle","font-size":22,"font-weight":700,fill:"var(--ink)"},summary);st.textContent="IFNG → CXCL10";
+  /* moving molecules */
+  const dots=[];
+  for(let k=0;k<12;k++)dots.push({leg:k<6?0:1,off:(k%6)*.1,jit:(Math.random()-.5)*28,d:el("circle",{r:5.5,fill:A,opacity:0},svg)});
+  const legs=[[127,185,212,185],[540,185,625,185]];
+  const pulse=el("circle",{r:7,fill:SIG,opacity:0},svg);
+  const L=9.5;
+  const clamp=v=>Math.max(0,Math.min(1,v));
+  const bump=(t,a,b)=>t>a&&t<b?Math.sin(Math.PI*(t-a)/(b-a)):0;
+  function draw(t){
+    dots.forEach(D=>{const st=D.leg===0?.3:5.3, p=(t-st-D.off)/1.2;
+      if(p<0||p>1){D.d.setAttribute("opacity",0);return}
+      const g=legs[D.leg];D.d.setAttribute("cx",g[0]+(g[2]-g[0])*p);D.d.setAttribute("cy",g[1]+D.jit*Math.sin(Math.PI*p));D.d.setAttribute("opacity",1)});
+    glowM.setAttribute("fill-opacity",bump(t,0,1)*.3);
+    const rOn=t>1.7&&t<6.8; r1.setAttribute("fill",rOn?SIG:"var(--surface)");
+    /* signal travels along cascade 2.0 -> 4.0 */
+    const sp=(t-2)/2;
+    if(sp>=0&&sp<=1){const f=sp*(sig.length-1), i=Math.min(sig.length-2,Math.floor(f)), q=f-i;
+      pulse.setAttribute("cx",sig[i][0]+(sig[i+1][0]-sig[i][0])*q);pulse.setAttribute("cy",sig[i][1]+(sig[i+1][1]-sig[i][1])*q);pulse.setAttribute("opacity",1);}
+    else pulse.setAttribute("opacity",0);
+    const reached=t<2?0:Math.floor(clamp((t-2)/2)*(sig.length-1)+1e-6);
+    const lit=t<6.8;
+    segs.forEach((s,i)=>s.setAttribute("stroke-opacity",lit&&i<reached?.9:.25));
+    sn.forEach((c,i)=>{if(c)c.setAttribute("fill",lit&&i<=reached&&t>2?SIG:"var(--muted)")});
+    /* NF-kB moves into nucleus 4.0 -> 4.6 */
+    const m=clamp((t-4)/.6), tx=455+(470-455)*m, ty=170+(208-170)*m;
+    tf.setAttribute("transform",`translate(${tx},${ty})`); tf.setAttribute("fill",t>4&&lit?SIG:"var(--muted)");
+    tfl.setAttribute("x",tx); tfl.setAttribute("y",ty-17);
+    nucGlow.setAttribute("fill-opacity",bump(t,4.5,5.8)*.35);
+    gene.setAttribute("fill",t>4.6&&t<6.8?"var(--act)":"var(--muted)"); gene.setAttribute("font-weight",t>4.6&&t<6.8?700:400);
+    r2.setAttribute("fill",t>6.4&&t<8.8?SIG:"var(--surface)");
+    glowN.setAttribute("fill-opacity",bump(t,6.4,7.6)*.3);
+    summary.setAttribute("opacity",t>7?clamp((t-7)/.5)*(t>9.1?clamp((L-t)/.4):1):0);
+  }
+  if(reduce){draw(8.2);return}
+  let on=true,t0=null; visible(svg,v=>on=v);
+  function frame(ms){if(t0===null)t0=ms; if(on)draw(((ms-t0)/1000)%L); requestAnimationFrame(frame)}
+  requestAnimationFrame(frame);
+})();
+
+/* ---------- TL1A cascade (Olbei et al., Sci Signal 2026) ---------- */
+(function sim(){
+  const svg=document.getElementById("sim");
+  const R=34;
+  const nodes={TL1A:{x:300,y:60,kind:"drug"},CSF2:{x:110,y:220},"IL-10":{x:240,y:220},"IL-17A":{x:375,y:220},
+    IFNG:{x:525,y:220,kind:"hit"},TNF:{x:110,y:400,kind:"hit"},"IL-1B":{x:260,y:400,kind:"hit"},
+    "IL-23A":{x:400,y:400,kind:"hit"},CCL20:{x:530,y:400,kind:"hit"}};
+  /* [source, target, (unused), UC only] */
+  const edges=[["TL1A","TNF",.1,0],["TL1A","CSF2",.05,1],["TL1A","IL-10",.05,1],["TL1A","IL-17A",.5,0],["TL1A","IFNG",.15,0],
+    ["CSF2","TNF",.05,1],["CSF2","IL-1B",.05,1],["IL-10","TNF",.05,1],["IL-10","IL-1B",.7,0],
+    ["IL-17A","TNF",.3,0],["IL-17A","IL-1B",.25,0],["IL-17A","IL-23A",.05,1],["IL-17A","CCL20",.3,0]];
+  const stops=[[90,30,158],[194,85,122],[242,193,78]];
+  function jac(v){return "#5A1E9E";const i=v<.5?0:1,f=v<.5?v*2:(v-.5)*2,a=stops[i],b=stops[i+1];
+    return "rgb("+a.map((c,k)=>Math.round(c+(b[k]-c)*f)).join(",")+")"}
+  const defs=el("defs",{},svg), gE=el("g",{},svg), gP=el("g",{},svg), gN=el("g",{},svg);
+  edges.forEach((e,i)=>{
+    const a=nodes[e[0]],b=nodes[e[1]],c=jac(e[2]);
+    const m=el("marker",{id:"m"+i,viewBox:"0 0 10 10",refX:8,refY:5,markerWidth:6,markerHeight:6,orient:"auto"},defs);
+    el("path",{d:"M0 0 L10 5 L0 10 Z",fill:c},m);
+    const x1=a.x+(b.x-a.x)*.12, y1=a.y+R, x2=b.x, y2=b.y-R-5, my=(y1+y2)/2;
+    const d=`M${x1} ${y1} C ${x1} ${my}, ${x2} ${my}, ${x2} ${y2}`;
+    e.path=el("path",{d,fill:"none",stroke:c,"stroke-width":3,"marker-end":`url(#m${i})`,"stroke-dasharray":e[3]?"8 6":"none",
+      style:"transition:opacity .5s"},gE);
+    e.len=e.path.getTotalLength(); e.color=c;
+  });
+  for(const n in nodes){const N=nodes[n];
+    N.g=el("g",{},gN);
+    N.halo=el("circle",{cx:N.x,cy:N.y,r:R+10,fill:N.kind==="hit"?"#F5D547":"#A9C8DE","fill-opacity":0},N.g);
+    N.c=el("circle",{cx:N.x,cy:N.y,r:R,fill:N.kind==="drug"?"#A9C8DE":N.kind==="hit"?"#FFFFFF":"#FFFFFF",stroke:"#555","stroke-width":1.2,
+      style:"transition:fill .6s"},N.g);
+    const t=el("text",{x:N.x,y:N.y+6,"text-anchor":"middle","font-size":17,fill:"#1F1B3A"},N.g);t.textContent=n;
+    N.slash=el("line",{x1:N.x-R*.75,y1:N.y+R*.75,x2:N.x+R*.75,y2:N.y-R*.75,stroke:"#1F1B3A","stroke-width":4,"stroke-linecap":"round",opacity:0},N.g);
+    N.flash=0;
+  }
+  let mode="uc", blocked=false;
+  const live=e=>mode==="uc"||!e[3];
+  const btn=document.getElementById("antiTL1A"), verdict=document.getElementById("verdict");
+  function update(){
+    edges.forEach(e=>e.path.style.opacity=live(e)?(blocked?.25:1):0);
+    nodes.TL1A.slash.setAttribute("opacity",blocked?1:0);
+    for(const n in nodes){const N=nodes[n]; if(N.kind==="hit")N.c.setAttribute("fill",blocked&&(mode==="uc"||n!=="IL-23A")?"#F5D547":"#FFFFFF");}
+    btn.setAttribute("aria-pressed",blocked); btn.textContent=blocked?"Anti-TL1A on":"Give anti-TL1A";
+    const uc=edges.filter(e=>e[3]).length;
+    verdict.textContent=blocked
+      ?(mode==="uc"?"Anti-TL1A affects five cytokines at once (yellow), including IL-1B and IL-23A, which TL1A only reaches indirectly."
+                   :"In the healthy network, blocking TL1A still affects TNF, IL-1B, CCL20 and IFNG, but not IL-23A: that link only exists in UC.")
+      :(mode==="uc"?`In UC, ${uc} extra interactions (dashed) open new routes from TL1A, mostly through CSF2 and IL-10.`
+                   :"The healthy network: TL1A signals mainly through IL-17A, and directly to TNF and IFNG.");
+  }
+  document.querySelectorAll(".seg button").forEach(b=>b.addEventListener("click",()=>{
+    mode=b.dataset.mode;document.querySelectorAll(".seg button").forEach(x=>x.setAttribute("aria-pressed",x===b));update()}));
+  btn.addEventListener("click",()=>{blocked=!blocked;update()});
+  update();
+  if(reduce)return;
+  const pulses=[]; let on=true,last=0,spawn=0;
+  visible(svg,v=>on=v);
+  function launch(from){edges.forEach(e=>{if(e[0]===from&&live(e))
+    pulses.push({e,p:0,dot:el("circle",{r:6,fill:e.color,stroke:"#fff","stroke-width":1.5},gP)})})}
+  function frame(t){
+    const dt=Math.min(50,t-last); last=t;
+    if(on){
+      spawn-=dt;
+      if(spawn<=0){spawn=2200; if(!blocked){nodes.TL1A.flash=1;launch("TL1A")}}
+      for(let i=pulses.length-1;i>=0;i--){const P=pulses[i]; P.p+=dt/1300;
+        if(!live(P.e)){P.dot.remove();pulses.splice(i,1);continue}
+        const pt=P.e.path.getPointAtLength(Math.min(1,P.p)*P.e.len);
+        P.dot.setAttribute("cx",pt.x);P.dot.setAttribute("cy",pt.y);
+        if(P.p>=1){const tgt=P.e[1];P.dot.remove();pulses.splice(i,1);
+          if(nodes[tgt].flash<.3){nodes[tgt].flash=1; if(!nodes[tgt].kind)setTimeout(()=>launch(tgt),250)}}}
+      for(const n in nodes){const N=nodes[n];N.flash=Math.max(0,N.flash-dt/800);
+        N.halo.setAttribute("fill-opacity",(N.flash*.55).toFixed(2));N.halo.setAttribute("r",R+4+N.flash*10)}
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+})();
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>CytokineLink | Cytokine interaction networks</title>
-<meta name="description" content="CytokineLink maps how cytokines activate each other, and how these networks are rewired in inflammatory disease.">
+<meta name="description" content="CytokineLink maps how cytokines switch each other on and off, and how these networks are rewired in inflammatory disease.">
 <meta property="og:title" content="CytokineLink">
 <meta property="og:description" content="Cytokine interaction networks in health, disease and therapy.">
 <style>
@@ -79,6 +79,35 @@ section h2{font-size:clamp(1.8rem,4.5vw,2.6rem); letter-spacing:-.02em; margin-b
 .links{display:flex; flex-wrap:wrap; gap:.4rem .9rem; font-family:var(--display); font-size:.95rem}
 .links b{font-weight:500; color:var(--muted)}
 footer{padding:2.5rem 0 3rem; border-top:1px solid var(--line); color:var(--muted); font-size:.95rem}
+
+/* pipeline */
+.cta{display:inline-block; margin-top:1.5rem; font-family:var(--display); font-weight:700; text-decoration:none;
+  background:#5A1E9E; color:#FFFFFF; padding:.75rem 1.4rem; border-radius:999px}
+.cta:hover{background:#45157C}
+.cta.alt{background:transparent; color:#5A1E9E; border:2px solid #5A1E9E}
+.ctas{display:flex; flex-wrap:wrap; gap:.75rem; margin-top:1.5rem}
+.ctas .cta{margin-top:0}
+#pipeline{background:var(--surface)}
+.steps{list-style:none; padding:0; margin:2rem 0; display:grid; gap:.75rem; grid-template-columns:1fr 1fr; counter-reset:step}
+.steps li.wide{grid-column:1/-1}
+.minis{display:grid; grid-template-columns:repeat(4,1fr); gap:.4rem; margin:.4rem 1.6rem .8rem 0}
+@media (min-width:640px){.minis{gap:.75rem; margin-right:2rem}}
+.mini{margin:0; text-align:center}
+.mini svg{height:auto!important; width:100%!important; margin:0!important}
+.mini figcaption{font-family:var(--display); font-weight:700; font-size:.68rem; line-height:1.2; margin-top:.25rem}
+@media (min-width:640px){.mini figcaption{font-size:.9rem}}
+.steps li{counter-increment:step; border:1px solid var(--line); border-radius:16px; padding:.85rem .9rem 1rem; background:var(--bg); position:relative}
+.steps li::before{content:counter(step); position:absolute; top:.8rem; right:1rem; font-family:var(--display); font-weight:700; color:#5A1E9E; font-size:1.3rem}
+.steps svg{height:52px; width:auto; margin-bottom:.4rem}
+@media (min-width:640px){.steps svg{height:68px}}
+.steps h3{font-size:1rem; margin-bottom:.3rem}
+.steps p{font-size:.88rem; line-height:1.45; color:var(--muted); margin:0}
+@media (min-width:640px){.steps h3{font-size:1.1rem} .steps p{font-size:.97rem}}
+.code{position:relative; background:#1F1B3A; color:#FAF9F6; border-radius:14px; padding:1.1rem 1.2rem; overflow-x:auto;
+  font-family:ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size:.92rem; line-height:1.6; margin:0}
+.code .c{color:#A9A3C9}
+.copy{position:absolute; top:.6rem; right:.6rem; font-family:var(--display); font-size:.85rem; border:1px solid #4A4568; background:#2A2550; color:#FAF9F6; border-radius:8px; padding:.3rem .7rem; cursor:pointer}
+.req{font-size:.95rem; color:var(--muted); margin-top:1rem}
 @media (prefers-reduced-motion:reduce){.edge.flow{animation:none} *{transition:none!important}}
 </style>
 </head>
@@ -87,27 +116,87 @@ footer{padding:2.5rem 0 3rem; border-top:1px solid var(--line); color:var(--mute
 <header class="wrap hero">
   <div>
     <h1>CytokineLink</h1>
-    <p class="lede">Cytokines switch each other on and off. We map those connections as networks to see how the immune system rewires itself in disease, and why some therapies fail.</p>
-    <div class="key">
-      <span><i style="background:var(--act)"></i>activates</span>
-      <span><i style="background:var(--inh)"></i>inhibits</span>
-    </div>
+    <p class="lede">Cytokines switch each other on and off. CytokineLink maps those connections as networks, to see how the immune system rewires itself in disease, and why some therapies fail.</p>
+    <a class="cta" href="#pipeline">Build your own networks</a>
   </div>
-  <svg id="heroNet" viewBox="0 0 600 420" role="img" aria-label="An animated network of cytokines sending activating and inhibiting signals to one another"></svg>
+  <svg id="heroNet" viewBox="0 0 600 420" role="img" aria-label="An animated network of cytokines sending signals to one another"></svg>
 </header>
 
 <main>
+<section id="pipeline">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Build cytokine networks from your own data</h2>
+      <p>The CytokineLink pipeline is open source. Give it a single-cell RNA-seq dataset and it returns a validated cytokine–cytokine network for each condition, with the cell types that send and receive each signal. It’s the method behind our ulcerative colitis and Crohn’s disease networks.</p>
+    </div>
+    <ol class="steps">
+      <li>
+        <svg viewBox="0 0 120 84" aria-hidden="true">
+          <g fill="#0072B2"><circle cx="22" cy="24" r="5"/><circle cx="32" cy="18" r="5"/><circle cx="30" cy="31" r="5"/><circle cx="18" cy="35" r="5"/></g>
+          <g fill="#E69F00"><circle cx="78" cy="20" r="5"/><circle cx="88" cy="28" r="5"/><circle cx="76" cy="32" r="5"/><circle cx="90" cy="16" r="5"/></g>
+          <g fill="#CC79A7"><circle cx="50" cy="62" r="5"/><circle cx="60" cy="68" r="5"/><circle cx="62" cy="56" r="5"/><circle cx="48" cy="72" r="5"/></g>
+        </svg>
+        <h3>Your single-cell data</h3>
+        <p>A Seurat object with annotated cell types.</p>
+      </li>
+      <li>
+        <svg viewBox="0 0 120 84" aria-hidden="true">
+          <circle cx="22" cy="42" r="15" fill="none" stroke="#0072B2" stroke-width="3"/>
+          <circle cx="98" cy="42" r="15" fill="none" stroke="#E69F00" stroke-width="3"/>
+          <path d="M40 42 H74" stroke="#5A1E9E" stroke-width="3"/><path d="M74 35 L82 42 L74 49 Z" fill="#5A1E9E"/>
+          <circle cx="50" cy="42" r="4" fill="#5A1E9E"/><circle cx="62" cy="42" r="4" fill="#5A1E9E"/>
+        </svg>
+        <h3>Predict interactions</h3>
+        <p>CytokineLink links cytokines across every pair of cell types.</p>
+      </li>
+      <li class="wide">
+        <div class="minis">
+          <figure class="mini">
+            <svg viewBox="0 0 120 92" aria-hidden="true"><rect x="2" y="2" width="116" height="88" rx="10" fill="none" stroke="#0072B2" stroke-width="3"/><g stroke="#5A1E9E" stroke-width="2.5"><line x1="60" y1="46" x2="26" y2="22"/><line x1="60" y1="46" x2="94" y2="24"/><line x1="26" y1="22" x2="62" y2="14"/><line x1="60" y1="46" x2="90" y2="74"/></g><g fill="#FFFFFF" stroke="#5A1E9E" stroke-width="2.5"><circle cx="60" cy="46" r="8"/><circle cx="26" cy="22" r="6"/><circle cx="94" cy="24" r="6"/><circle cx="90" cy="74" r="6"/><circle cx="62" cy="14" r="6"/></g></svg>
+            <figcaption style="color:#0072B2">Healthy</figcaption>
+          </figure>
+          <figure class="mini">
+            <svg viewBox="0 0 120 92" aria-hidden="true"><rect x="2" y="2" width="116" height="88" rx="10" fill="none" stroke="#D55E00" stroke-width="3"/><g stroke="#5A1E9E" stroke-width="2.5"><line x1="60" y1="46" x2="26" y2="22"/><line x1="60" y1="46" x2="94" y2="24"/><line x1="60" y1="46" x2="34" y2="78"/><line x1="60" y1="46" x2="90" y2="74"/><line x1="26" y1="22" x2="94" y2="24"/><line x1="94" y1="24" x2="62" y2="14"/><line x1="34" y1="78" x2="90" y2="74"/></g><g fill="#FFFFFF" stroke="#5A1E9E" stroke-width="2.5"><circle cx="60" cy="46" r="8"/><circle cx="26" cy="22" r="6"/><circle cx="94" cy="24" r="6"/><circle cx="34" cy="78" r="6"/><circle cx="90" cy="74" r="6"/><circle cx="62" cy="14" r="6"/></g></svg>
+            <figcaption style="color:#D55E00">Inflamed</figcaption>
+          </figure>
+          <figure class="mini">
+            <svg viewBox="0 0 120 92" aria-hidden="true"><rect x="2" y="2" width="116" height="88" rx="10" fill="none" stroke="#CC79A7" stroke-width="3"/><g stroke="#5A1E9E" stroke-width="2.5"><line x1="60" y1="46" x2="26" y2="22"/><line x1="60" y1="46" x2="94" y2="24"/><line x1="60" y1="46" x2="90" y2="74"/><line x1="34" y1="78" x2="90" y2="74"/><line x1="26" y1="22" x2="62" y2="14"/></g><g fill="#FFFFFF" stroke="#5A1E9E" stroke-width="2.5"><circle cx="60" cy="46" r="8"/><circle cx="26" cy="22" r="6"/><circle cx="94" cy="24" r="6"/><circle cx="34" cy="78" r="6"/><circle cx="90" cy="74" r="6"/><circle cx="62" cy="14" r="6"/></g></svg>
+            <figcaption style="color:#CC79A7">Treated</figcaption>
+          </figure>
+          <figure class="mini">
+            <svg viewBox="0 0 120 92" aria-hidden="true"><rect x="2" y="2" width="116" height="88" rx="10" fill="none" stroke="#E69F00" stroke-width="3"/><g stroke="#5A1E9E" stroke-width="2.5"><line x1="60" y1="46" x2="94" y2="24"/><line x1="60" y1="46" x2="34" y2="78"/><line x1="26" y1="22" x2="62" y2="14"/><line x1="60" y1="46" x2="90" y2="74"/></g><g fill="#FFFFFF" stroke="#5A1E9E" stroke-width="2.5"><circle cx="60" cy="46" r="8"/><circle cx="26" cy="22" r="6"/><circle cx="94" cy="24" r="6"/><circle cx="34" cy="78" r="6"/><circle cx="90" cy="74" r="6"/><circle cx="62" cy="14" r="6"/></g></svg>
+            <figcaption style="color:#E69F00">Non-inflamed</figcaption>
+          </figure>
+        </div>
+        <h3>Your cytokine networks</h3>
+        <p>One network for each condition, whether healthy tissue, disease states or treatment groups, with the sending and receiving cell types for every interaction. Compare them to see how cytokine communication is rewired.</p>
+      </li>
+    </ol>
+    <pre class="code" id="cmd"><button type="button" class="copy" id="copyCmd">Copy</button><span class="c"># get the pipeline</span>
+git clone https://github.com/korcsmarosgroup/CytokineLink_pipeline
+cd CytokineLink_pipeline/scripts
+
+<span class="c"># run it: Seurat .rds, cell type column, output name</span>
+Rscript unified_pipeline.R my_data.rds cell_type my_network</pre>
+    <p class="req">Requires R with tidyverse, Seurat and nichenetr, plus the NicheNet prior model files from <a href="https://zenodo.org/records/7074291">Zenodo</a>. Full setup and options are in the repository’s documentation.</p>
+    <div class="ctas">
+      <a class="cta" href="https://github.com/korcsmarosgroup/CytokineLink_pipeline">Get the pipeline on GitHub</a>
+      <a class="cta alt" href="https://www.science.org/doi/10.1126/scisignal.adt0986">Read the method</a>
+    </div>
+  </div>
+</section>
+
 <section>
   <div class="wrap">
     <div class="prose">
       <h2>One cytokine leads to another</h2>
       <p>Cytokines are small proteins that cells use to talk to each other. When a cell receives a cytokine, it often responds by producing a different one, passing the message on to the next cell.</p>
-      <p>Each of these hand-offs is a cytokine interaction. Below, IFNG from a Th1 cell binds its receptor, IFNGR, on an epithelial cell. Inside the cell, JAK1 and JAK2 activate the transcription factor STAT1, which moves into the nucleus and switches on the CXCL10 gene. The CXCL10 released then attracts more T cells through their CXCR3 receptor.</p>
+      <p>Each of these chain of events is a cytokine interaction. Below, IFNG from a Th1 cell binds its receptor, IFNGR, on an epithelial cell. Inside the cell, JAK1 and JAK2 activate the transcription factor STAT1, which moves into the nucleus and switches on the CXCL10 gene. The CXCL10 released then attracts more T cells through their CXCR3 receptor.</p>
     </div>
     <div class="figure">
       <svg id="relay" viewBox="0 0 760 350" role="img" aria-label="Animation: IFNG from a Th1 cell binds IFNGR on an epithelial cell, signals through JAK1 and JAK2 to activate STAT1, which induces CXCL10. CXCL10 reaches a T cell through CXCR3. The chain is summarised as the interaction IFNG to CXCL10."></svg>
     </div>
-    <p class="caption prose">CytokineLink chains ligand–receptor, signalling and regulatory interactions into a single edge, IFNG → CXCL10, and assembles these edges across cell types into networks.</p>
+    <p class="caption prose">CytokineLink chains ligand–receptor, signalling and regulatory interactions into a single edge, IFNG → CXCL10, and assembles these edges across cell types into networks. These intracellular cascades are also accessible, and can be explored in detail.</p>
   </div>
 </section>
 
@@ -115,8 +204,8 @@ footer{padding:2.5rem 0 3rem; border-top:1px solid var(--line); color:var(--mute
   <div class="wrap">
     <div class="prose">
       <h2>Following a drug through the network</h2>
-      <p> In ulcerative colitis, TL1A sits at the top of a cascade: it reaches TNF, IL-1B, IL-23A, CCL20 and IFNG, some directly and some through CSF2, IL-10 and IL-17A.</p>
-      <p>Watch the signals flow, then block TL1A to see which cytokines it affects. Based on phase 2 trial data from <a href="https://academic.oup.com/ibdjournal/article/28/3/434/6357022?login=false">Hassan-Zahraee et al., <i>Inflammatory Bowel Diseases</i>, 2022</a>. Switch to the healthy network to see which routes exist only in UC.</p>
+      <p>A drug that blocks one cytokine also changes every cytokine that depends on it. In ulcerative colitis, TL1A sits at the top of a cascade: it reaches TNF, IL-1B, IL-23A, CCL20 and IFNG, some directly and some through CSF2, IL-10 and IL-17A.</p>
+      <p>Watch the signals flow, then block TL1A to see which cytokines it affects. Based on phase 2 trial data from <a href="https://academic.oup.com/ibdjournal/article/28/3/434/6357022?login=false">Hassan-Zahraee et al., <i>Inflammatory Bowel Diseases</i>, 2022</a>. Switch to the healthy network to see which routes exist only in UC. Switch to the healthy network to see which routes exist only in UC.</p>
     </div>
     <div class="figure">
       <div class="controls">
@@ -158,7 +247,7 @@ footer{padding:2.5rem 0 3rem; border-top:1px solid var(--line); color:var(--mute
       <li>
         <div class="when">2026 · Science Signaling</div>
         <h3>Cytokine networks in ulcerative colitis</h3>
-        <p>Networks from colonic biopsies of treatment-naive and treatment-exposed ulcerative colitis patients. They recover known interactions, confirmed in patient-derived organoids on an RNA and protein level, and reveal a subnetwork unique to treatment-naive patients.</p>
+        <p>Networks from colonic biopsies of treatment-naive and treatment-exposed ulcerative colitis patients. They recover known interactions, confirmed in patient-derived organoids, and reveal a subnetwork unique to treatment-naive patients.</p>
         <div class="links">
           <a href="https://www.science.org/doi/10.1126/scisignal.adt0986">Paper</a>
           <b>Networks:</b>
@@ -206,6 +295,12 @@ const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim
 function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
 function visible(node,cb){if(!("IntersectionObserver" in window)){cb(true);return}new IntersectionObserver(es=>es.forEach(e=>cb(e.isIntersecting)),{threshold:.1}).observe(node)}
 
+/* ---------- Copy command ---------- */
+(function(){const b=document.getElementById("copyCmd");if(!b)return;
+  b.addEventListener("click",async()=>{const t=document.getElementById("cmd").innerText.replace(/^Copy\s*/,"");
+    try{await navigator.clipboard.writeText(t);b.textContent="Copied"}catch(e){b.textContent="Select to copy"}
+    setTimeout(()=>b.textContent="Copy",2000)})})();
+
 /* ---------- Hero: ambient network with travelling signals ---------- */
 (function hero(){
   const svg=document.getElementById("heroNet");
@@ -217,7 +312,7 @@ function visible(node,cb){if(!("IntersectionObserver" in window)){cb(true);retur
   const gE=el("g",{},svg), gP=el("g",{},svg), gN=el("g",{},svg);
   const halo={};
   edges.forEach(([s,t,w])=>{const[a,b]=[nodes[s],nodes[t]];
-    el("line",{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:w>0?"var(--act)":"var(--inh)","stroke-opacity":.28,"stroke-width":2},gE)});
+    el("line",{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:"#5A1E9E","stroke-opacity":.28,"stroke-width":2},gE)});
   for(const n in nodes){const[x,y]=nodes[n];
     halo[n]=el("circle",{cx:x,cy:y,r:30,fill:"var(--act)","fill-opacity":0},gN);
     el("circle",{cx:x,cy:y,r:30,fill:"var(--surface)",stroke:"var(--line)","stroke-width":2,"fill-opacity":.88},gN);
@@ -230,11 +325,11 @@ function visible(node,cb){if(!("IntersectionObserver" in window)){cb(true);retur
     if(on){
       spawn-=dt;
       if(spawn<=0){const e=edges[Math.floor(Math.random()*edges.length)];
-        pulses.push({e,p:0,dot:el("circle",{r:5,fill:e[2]>0?"var(--act)":"var(--inh)"},gP)});spawn=260+Math.random()*300;}
+        pulses.push({e,p:0,dot:el("circle",{r:5,fill:"#5A1E9E"},gP)});spawn=260+Math.random()*300;}
       for(let i=pulses.length-1;i>=0;i--){const P=pulses[i];P.p+=dt/1400;
         const[a,b]=[nodes[P.e[0]],nodes[P.e[1]]];
         P.dot.setAttribute("cx",a[0]+(b[0]-a[0])*P.p);P.dot.setAttribute("cy",a[1]+(b[1]-a[1])*P.p);
-        if(P.p>=1){flash[P.e[1]]={v:1,c:P.e[2]>0?"var(--act)":"var(--inh)"};P.dot.remove();pulses.splice(i,1);}}
+        if(P.p>=1){flash[P.e[1]]={v:1,c:"#5A1E9E"};P.dot.remove();pulses.splice(i,1);}}
       for(const n in flash){const f=flash[n];f.v=Math.max(0,f.v-dt/700);
         halo[n].setAttribute("fill",f.c);halo[n].setAttribute("fill-opacity",f.v*.5);halo[n].setAttribute("r",30+f.v*10);}
     }
